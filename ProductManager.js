@@ -1,10 +1,8 @@
 const fs = require("fs");
 
-const producto = [];
-
 class ProductManager {
     constructor(filePath) {
-        this.productos = producto;
+        this.productos = [];
         this.path = filePath;
     }
 
@@ -13,8 +11,8 @@ class ProductManager {
         try {
             if (
                 !newProduct.title ||
-                !newProduct.desc ||
-                !newProduct.precio ||
+                !newProduct.description ||
+                !newProduct.price ||
                 !newProduct.code ||
                 !newProduct.stock ||
                 !newProduct.thumbnail
@@ -30,12 +28,12 @@ class ProductManager {
 
             let autoIncremento = this.productos[this.productos.length - 1].id + 1;
 
-            this.productos,
-                this.productos.push({ id: autoIncremento, ...newProduct });
+
+            this.productos.push({ id: autoIncremento, ...newProduct });
 
             await fs.promises.writeFile(
                 this.path,
-                JSON.stringify(this.product, "utf-8", "\t")
+                JSON.stringify(this.productos, "utf-8", "\t")
             );
 
             return "Producto cargado";
@@ -45,13 +43,13 @@ class ProductManager {
     };
 
     getProducts = async () => {
-        try{
+        try {
             const data = await fs.promises.readFile(this.path, 'utf-8')
-            this.product = JSON.parse(data);
-            return this.product
+            this.productos = JSON.parse(data);
+            return this.productos
         }
-        catch (error){
-            return(error)
+        catch (error) {
+            return (error)
         }
     }
 
@@ -62,46 +60,46 @@ class ProductManager {
         return findProd;
     }
 
-    updateProduct  = async (id, updProd) => {
-        try{
-            let producto = this.product.find(prod => prod.id === id)
+    updateProduct = async (id, updProd) => {
+        try {
+            let producto = this.productos.find(prod => prod.id === id)
             if (!producto) return 'No encontrado'
             producto.title = updProd.title
             producto.description = updProd.description
             producto.price = updProd.price
             producto.thumbnail = updProd.thumbnail
             producto.stock = updProd.stock
-            producto.code= updProd.code
-            await fs.promises.writeFile(this.path, JSON.stringify(this.product,'utf-8','\t'))
+            producto.code = updProd.code
+            await fs.promises.writeFile(this.path, JSON.stringify(this.productos, 'utf-8', '\t'))
             return 'Producto Actualizado'
-            }
-        catch (error){
-            return(error)
+        }
+        catch (error) {
+            return (error)
         }
     }
 
-    deleteProduct  = async (idDelete) => {
-        try{
-            const remove = this.product.filter(prod => prod.id !== idDelete) 
+    deleteProduct = async (idDelete) => {
+        try {
+            const remove = this.productos.filter(prod => prod.id !== idDelete)
             if (!remove) return 'Id no encontrado'
             console.log(remove)
-            await fs.promises.writeFile(this.path, JSON.stringify(remove,'utf-8','\t'))
+            await fs.promises.writeFile(this.path, JSON.stringify(remove, 'utf-8', '\t'))
             return 'Producto eliminado'
         }
-        catch (error){
-            return(error)
+        catch (error) {
+            return (error)
         }
     }
 }
 
 const products = new ProductManager('./Productos.json');
-const fileUse = async() =>{
+const fileUse = async () => {
     console.log(await products.getProducts())
-    console.log(await products.addProduct({title: 'producto prueba', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 25, code: 'abc123'}))
-    console.log(await products.addProduct({title: 'producto prueba2', description: 'Este es un producto prueba2', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc124'}))
-    console.log(await products.addProduct({title: 'producto prueba3', description: 'Este es un producto prueba3', price: 300, thumbnail: 'sin imagen', stock: 200, code: 'abc125'}))
+    console.log(await products.addProduct({ title: 'producto prueba', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 25, code: 'abc123' }))
+    console.log(await products.addProduct({ title: 'producto prueba2', description: 'Este es un producto prueba2', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc124' }))
+    console.log(await products.addProduct({ title: 'producto prueba3', description: 'Este es un producto prueba3', price: 300, thumbnail: 'sin imagen', stock: 200, code: 'abc125' }))
     console.log(await products.getProducts())
-    console.log(await products.updateProduct(1, {title: 'producto modificado', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc125'}))
+    console.log(await products.updateProduct(1, { title: 'producto modificado', description: 'Este es un producto prueba', price: 200, thumbnail: 'sin imagen', stock: 200, code: 'abc125' }))
     console.log(await products.deleteProduct(2))
     console.log(await products.getProducts())
     console.table(await products.getProductById(2))
